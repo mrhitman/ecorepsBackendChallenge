@@ -22,6 +22,14 @@ module.exports = function (err, req, res, next) {
     });
   }
 
+  if (err.name === 'CastError') {
+    res.status(400);
+
+    return res.send({
+      message: err.message,
+    });
+  }
+
   global.console.warn(err.message);
   res.status(500);
   res.send('Something went wrong');

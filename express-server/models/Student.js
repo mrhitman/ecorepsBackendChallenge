@@ -5,7 +5,13 @@ const studentSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
-  }
+  },
+  lessons: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson',
+  }]
+}, {
+  timestamps: true,
 });
 
 const Student = mongoose.model("Student", studentSchema);
