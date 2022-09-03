@@ -1,61 +1,45 @@
-// Import dependencies
-const mongoose = require('mongoose');
-const express = require('express');
+const express = require("express");
+const {Lesson} = require("../models/Lesson");
+
 const router = express.Router();
 
-// MongoDB URL from the docker-compose file
-const dbHost = 'mongodb://database/mean-docker';
+router.get("/lessons", (req, res) => {
+  Lesson.find({}, (error, lessons) => {
+    if (error) res.status(500).send(error);
 
-// Connect to mongodb
-mongoose.connect(dbHost);
-
-// create mongoose schemas
-const lessonSchema = new mongoose.Schema({
-    title: String,
-    content: String
+    res.status(200).json(lessons);
+  });
 });
 
-// create mongoose model
-const Lesson = mongoose.model('Lesson', lessonSchema);
+router.delete("/lessons/:id", (req, res) => {
+  Lesson.remove({_id: req.params.id}, (error) => {
+    if (error) res.status(500).send(error);
 
-/* GET all lessons. */
-router.get('/lessons', (req, res) => {
-    Lesson.find({}, (err, lessons) => {
-        if (err) res.status(500).send(error)
-        res.status(200).json(lessons);
-    });
+    res.status(200).json({deleted: true});
+  });
 });
 
-/* DELETE one lesson. */
-router.delete('/lessons/:id', (req, res) => {
-    Lesson.remove({_id:req.params.id}, (err) => {
-        if (err) res.status(500).send(error);
-        res.status(200).json({deleted: true});
-    });
+router.get("/lessons/:id", (req, res) => {
+  Lesson.findById(req.params.id, (error, lessons) => {
+    if (error) res.status(500).send(error);
+
+    res.status(200).json(lessons);
+  });
 });
 
-/* GET one lesson. */
-router.get('/lessons/:id', (req, res) => {
-    Lesson.findById(req.params.id, (err, lessons) => {
-        if (err) res.status(500).send(error);
-        res.status(200).json(lessons);
-    });
-});
+router.post("/lessons", (req, res) => {
+  const lesson = new Lesson({
+    title: req.body.title,
+    content: "some content",
+  });
 
-/* Create a lesson. */
-router.post('/lessons', (req, res) => {
-    let lesson = new Lesson({
-        title: req.body.title,
-        content: "some content"
-    });
+  lesson.save((error) => {
+    if (error) res.status(500).send(error);
 
-	lesson.save(error => {
-        if (error) res.status(500).send(error);
-
-        res.status(201).json({
-            message: 'Lesson created successfully'
-        });
+    res.status(201).json({
+      message: "Lesson created successfully",
     });
+  });
 });
 
 module.exports = router;

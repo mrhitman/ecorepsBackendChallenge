@@ -2,7 +2,7 @@ FROM node:12.2.0
 
 RUN npm install -g @angular/cli@8.3.1
 
-RUN npm i npm@latest -g
+RUN npm i npm@6 -g
 
 RUN pwd
 

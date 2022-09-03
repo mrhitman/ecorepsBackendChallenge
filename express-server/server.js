@@ -1,46 +1,25 @@
-// Get dependencies
-const express = require('express');
-const path = require('path');
-const http = require('http');
-const bodyParser = require('body-parser');
+const http = require("http");
+const dotenv = require("dotenv");
 
-// Get our API routes
-const api = require('./routes/api');
-const lessons = require('./routes/lessons');
-const students = require('./routes/students');
+const appInitialize = require("./app");
+const dbInitialize = require("./database");
+const {getEnvValue} = require("./tools/env");
 
-const app = express();
+async function bootstrap({port, dbHost} = settings) {
+  await dbInitialize(dbHost);
+  return appInitialize(port);
+}
 
-// Parsers for POST data
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+if (require.main === module) {
+  dotenv.config();
+  const dbHost = getEnvValue("DB_CONNECTION");
+  const port = getEnvValue("PORT", 3000);
 
-// Cross Origin middleware
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
-  next()
-});
-
-// Set our api routes
-app.use('/', api);
-app.use('/', lessons);
-app.use('/', students);
-
-
-/**
- * Get port from environment and store in Express.
- */
-const port = process.env.PORT || '3000';
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-const server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-server.listen(port, () => console.log(`API running on localhost:${port}`));
+  bootstrap({
+    port,
+    dbHost,
+  }).then((app) => {
+    const server = http.createServer(app);
+    server.listen(port, () => global.console.log(`API running on localhost:${port}`));
+  });
+}

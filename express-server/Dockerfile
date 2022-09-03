@@ -1,5 +1,5 @@
 # Create image based off of the official Node 6 image
-FROM node:8
+FROM node:12
 
 WORKDIR /app/express-server
 
