@@ -1,15 +1,13 @@
-version: '3.4'
+version: "3.4"
 
-# Define the services/containers to be run
 services:
-  angular:
+  frontend:
     hostname: localhost
-    #container_name: angular-app
     build:
       context: .
       dockerfile: angular-app/Dockerfile
     links:
-      - express
+      - backend
     volumes:
       - ".:/app"
       - /app/express-server/node_modules
@@ -18,21 +16,30 @@ services:
     ports:
       - 8181:4200
       - 4400:49153
-  express: #name of the second service
+
+  backend:
     build:
       context: .
       dockerfile: express-server/Dockerfile
     links:
       - database
     volumes:
-       - ".:/app"
-       - /app/express-server/node_modules
-       - /app/angular-app/node_modules
+      - ".:/app"
+      - /app/express-server/node_modules
+      - /app/angular-app/node_modules
     tty: true
     ports:
-      - "3000:3000" #specify ports forewarding
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_CONNECTION=mongodb://database/mean-docker
+    depends_on:
+      - "database"
 
-  database: # name of the third service
-    image: mongo # specify image to build container from
+  database:
+    image: mongo
+    container_name: database
     ports:
-      - "27017:27017" # specify port forewarding
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=mean-docker

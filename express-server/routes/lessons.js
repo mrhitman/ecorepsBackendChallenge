@@ -3,42 +3,35 @@ const {Lesson} = require("../models/Lesson");
 
 const router = express.Router();
 
-router.get("/lessons", (req, res) => {
-  Lesson.find({}, (error, lessons) => {
-    if (error) res.status(500).send(error);
-
-    res.status(200).json(lessons);
-  });
+router.get("/lessons", async (_, res) => {
+  const lessons = await Lesson.find({});
+  res.status(200);
+  res.json(lessons);
 });
 
-router.delete("/lessons/:id", (req, res) => {
-  Lesson.remove({_id: req.params.id}, (error) => {
-    if (error) res.status(500).send(error);
-
-    res.status(200).json({deleted: true});
-  });
+router.delete("/lessons/:id", async (req, res) => {
+  await Lesson.deleteOne({_id: req.params.id});
+  res.status(200);
+  res.json({deleted: true});
 });
 
-router.get("/lessons/:id", (req, res) => {
-  Lesson.findById(req.params.id, (error, lessons) => {
-    if (error) res.status(500).send(error);
-
-    res.status(200).json(lessons);
-  });
+router.get("/lessons/:id", async (req, res) => {
+  const lesson = await Lesson.findById(req.params.id);
+  res.status(200);
+  res.json(lesson);
 });
 
-router.post("/lessons", (req, res) => {
+router.post("/lessons", async (req, res) => {
+  const {title, content} = req.body;
   const lesson = new Lesson({
-    title: req.body.title,
-    content: "some content",
+    title,
+    content,
   });
+  await lesson.save();
 
-  lesson.save((error) => {
-    if (error) res.status(500).send(error);
-
-    res.status(201).json({
-      message: "Lesson created successfully",
-    });
+  res.status(201);
+  res.json({
+    message: "Lesson created successfully",
   });
 });
 

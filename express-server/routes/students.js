@@ -3,41 +3,38 @@ const {Student} = require("../models/Student");
 
 const router = express.Router();
 
-router.get("/students", (req, res) => {
-  Student.find({}, (error, students) => {
-    if (error) res.status(500).send(error);
+router.get("/students", async (_, res) => {
+  const students = await Student.find({}).populate().lean().exec();
+  res.status(200);
+  res.json(students);
+});
 
-    res.status(200).json(students);
+router.get("/students/:id", async (req, res) => {
+  const student = await Student.findById(req.params.id)
+    .populate()
+    .lean()
+    .exec();
+  res.status(200);
+  res.json(student);
+});
+
+router.post("/students", async (req, res) => {
+  const {name} = req.body;
+  const student = new Student({
+    name,
+  });
+
+  await student.save();
+  res.status(201);
+  res.json({
+    message: "Student created successfully",
   });
 });
 
-router.delete("/students/:id", (req, res) => {
-  Student.remove({_id: req.params.id}, (error) => {
-    if (error) res.status(500).send(error);
-
-    res.status(200).json({deleted: true});
-  });
-});
-
-router.get("/students/:id", (req, res) => {
-  Student.findById(req.params.id, (error, students) => {
-    if (error) res.status(500).send(error);
-    res.status(200).json(students);
-  });
-});
-
-router.post("/students", (req, res) => {
-  let student = new Student({
-    name: req.body.name,
-  });
-
-  student.save((error) => {
-    if (error) res.status(500).send(error);
-
-    res.status(201).json({
-      message: "Student created successfully",
-    });
-  });
+router.delete("/students/:id", async (req, res) => {
+  await Student.deleteOne({_id: req.params.id});
+  res.status(200);
+  res.json({deleted: true});
 });
 
 module.exports = router;
