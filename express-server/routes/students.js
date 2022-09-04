@@ -17,7 +17,11 @@ function attachRankInfo(student, total, ranks) {
 }
 
 router.get("/students", async (_, res) => {
-  const students = await Student.find({}).lean().exec();
+  const students = await Student.find({})
+    .populate("lessonsHistory")
+    .lean()
+    .exec();
+
   const total = await global.cacheClient.get("lessonsTotal");
   const ranks = await global.cacheClient.zrevrange("ranks", 0, -1);
 
@@ -26,7 +30,11 @@ router.get("/students", async (_, res) => {
 });
 
 router.get("/students/:id", async (req, res) => {
-  const student = await Student.findById(req.params.id).lean().exec();
+  const student = await Student.findById(req.params.id)
+    .populate("lessonsHistory")
+    .lean()
+    .exec();
+
   const total = await global.cacheClient.get("lessonsTotal");
   const ranks = await global.cacheClient.zrevrange("ranks", 0, -1);
 
@@ -58,9 +66,12 @@ router.post("/students/:id/toggle-lesson", async (req, res) => {
   const student = await Student.findById(req.params.id);
   const {lessonId} = req.body;
 
-  student.lessons.includes(lessonId)
-    ? student.lessons.pull(lessonId)
-    : student.lessons.push(lessonId);
+  if (student.lessons.includes(lessonId)) {
+    student.lessons.pull(lessonId)
+  } else {
+    student.lessons.push(lessonId);
+    student.lessonsHistory.push(lessonId);
+  }
 
   student.save();
   await global.cacheClient.zadd("ranks", student.lessons.length, req.params.id);

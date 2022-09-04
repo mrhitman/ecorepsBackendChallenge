@@ -34,9 +34,15 @@
             <td>
               Completed Lessons: <br />
               <ul>
-                <li>{{student.percent}}% of lessons completed</li>
-                <li>{{student.lessons.length}} of {{lessons.length}} lessons completed</li>
-                <li>You performed better than {{student.percentile}}% of your class mates</li>
+                <li>{{ student.percent }}% of lessons completed</li>
+                <li>
+                  {{ student.lessons.length }} of {{ lessons.length }} lessons
+                  completed
+                </li>
+                <li>
+                  You performed better than {{ student.percentile }}% of your
+                  class mates
+                </li>
               </ul>
             </td>
             <td>
@@ -48,6 +54,15 @@
               </button>
             </td>
           </tr>
+
+          <td>
+            <br />
+            Last completed Lessons: <br />
+            <tr *ngFor="let lessonHistory of student.lessonsHistory.slice(-3)">
+              <td>Lesson title: {{ lessonHistory.title }}</td>
+            </tr>
+          </td>
+
           <tr *ngFor="let lesson of lessons">
             <td>{{ lesson.title }}</td>
             <td>

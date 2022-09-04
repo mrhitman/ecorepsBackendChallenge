@@ -13,6 +13,12 @@ const studentSchema = new mongoose.Schema(
         ref: "Lesson",
       },
     ],
+    lessonsHistory: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lesson",
+      },
+    ],
   },
   {
     timestamps: true,
