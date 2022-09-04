@@ -5,12 +5,15 @@ const router = express.Router();
 
 router.get("/lessons", async (_, res) => {
   const lessons = await Lesson.find({});
+
   res.status(200);
   res.json(lessons);
 });
 
 router.delete("/lessons/:id", async (req, res) => {
   await Lesson.deleteOne({_id: req.params.id});
+  await global.cacheClient.set('lessonsTotal', await Lesson.count());
+
   res.status(200);
   res.json({deleted: true});
 });
@@ -28,6 +31,7 @@ router.post("/lessons", async (req, res) => {
     content,
   });
   await lesson.save();
+  await global.cacheClient.set('lessonsTotal', await Lesson.count());
 
   res.status(201);
   res.json({

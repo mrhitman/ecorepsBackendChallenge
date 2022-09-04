@@ -32,11 +32,11 @@
           <tr>
             <td>{{ student.name }}</td>
             <td>
-              Completed Lessons: <b>(TODO, this is example data)</b><br />
+              Completed Lessons: <br />
               <ul>
-                <li>{{completedPercent(student)}}% of lessons completed</li>
+                <li>{{student.percent}}% of lessons completed</li>
                 <li>{{student.lessons.length}} of {{lessons.length}} lessons completed</li>
-                <li>You performed better than 30% of your class mates</li>
+                <li>You performed better than {{student.percentile}}% of your class mates</li>
               </ul>
             </td>
             <td>

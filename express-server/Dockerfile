@@ -4,7 +4,7 @@ FROM node:12
 WORKDIR /app/express-server
 
 # Install dependecies
-RUN npm install -g nodemon
+RUN npm install -g nodemon pm2
 
 COPY ./express-server/package.json ./
 

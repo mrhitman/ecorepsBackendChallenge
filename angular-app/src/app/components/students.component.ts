@@ -90,11 +90,7 @@ export class StudentsComponent implements OnInit {
   }
 
   public isCompleted(lesson, student) {
-    return student.lessons.some(({_id}) => lesson._id === _id);
-  }
-
-  public completedPercent(student) {
-    return Number(100 * (student.lessons.length / this.lessons.length)).toFixed(2);
+    return student.lessons.some(id => lesson._id === id);
   }
 
   private loadData() {
